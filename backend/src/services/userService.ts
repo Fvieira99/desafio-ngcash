@@ -15,7 +15,7 @@ async function signUp(data: inputUserData) {
 
 	const newUser = { ...data, password: encryptPassword(data.password) };
 
-	await userRepository.signUp(newUser);
+	await userRepository.createUserAndAccount(newUser);
 }
 
 async function signIn(data: inputUserData) {
@@ -32,7 +32,7 @@ async function signIn(data: inputUserData) {
 	return token;
 }
 
-function encryptPassword(password: string): string {
+export function encryptPassword(password: string): string {
 	const SALT = 10;
 
 	return bcrypt.hashSync(password, SALT);

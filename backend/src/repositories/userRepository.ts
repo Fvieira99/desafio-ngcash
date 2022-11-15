@@ -11,7 +11,7 @@ async function findUserByUsername(username: string) {
 	});
 }
 
-async function signUp(data: inputUserData) {
+async function createUserAndAccount(data: inputUserData) {
 	await prisma.user.create({
 		data: {
 			username: data.username,
@@ -26,7 +26,7 @@ async function signUp(data: inputUserData) {
 }
 
 const userRepository = {
-	signUp,
+	createUserAndAccount,
 	findUserByUsername,
 };
 
