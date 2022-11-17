@@ -7,10 +7,16 @@ import transactionSchema from "../schemas/transactionSchema.js";
 const transactionRouter = Router();
 
 transactionRouter.post(
-	"/cashout",
+	"/transactions/cashout",
 	validateToken,
 	validateSchema(transactionSchema),
 	transactionController.cashOut
+);
+
+transactionRouter.get(
+	"/transactions/",
+	validateToken,
+	transactionController.findAllUserTransactions
 );
 
 export default transactionRouter;
