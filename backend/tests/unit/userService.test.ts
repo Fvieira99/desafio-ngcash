@@ -1,12 +1,14 @@
-import bcrypt from "bcrypt";
 import { jest } from "@jest/globals";
 
 import userRepository from "../../src/repositories/userRepository.js";
 import userService from "../../src/services/userService.js";
 import { createUserData } from "../factories/userFactory.js";
-import { conflictError, unauthorizedError } from "../../src/utils/errors.js";
+import {
+	conflictError,
+	notFoundError,
+	unauthorizedError,
+} from "../../src/utils/errors.js";
 import { encryptPassword } from "../../src/services/userService.js";
-import { User } from "@prisma/client";
 
 beforeEach(() => {
 	jest.clearAllMocks();
@@ -21,6 +23,8 @@ describe("User Service Test Suit!", () => {
 	jest
 		.spyOn(userRepository, "findUserByUsername")
 		.mockImplementation((): any => {});
+
+	jest.spyOn(userRepository, "findUserById").mockImplementation((): any => {});
 
 	it("Given nonexisting username it should create new user and new account!", async () => {
 		const user = createUserData();
@@ -108,5 +112,36 @@ describe("User Service Test Suit!", () => {
 				"Your credentials are not valid! Please make sure that both field are correct!"
 			)
 		);
+	});
+
+	it("Given valid userId it should return user info!", async () => {
+		const userId = 1;
+
+		jest
+			.spyOn(userRepository, "findUserById")
+			.mockImplementationOnce((): any => {
+				return {
+					username: "User",
+					userId: 1,
+					account: {
+						accountId: 1,
+						balance: 10000,
+					},
+				};
+			});
+
+		const response = await userService.getUserInfo(userId);
+
+		expect(response).not.toBeNull();
+		expect(response.username).toBe("User");
+		expect(userRepository.findUserById).toBeCalledTimes(1);
+	});
+
+	it("Given nonexisting userId it should not return user info!", async () => {
+		const userId = 1;
+
+		const promise = userService.getUserInfo(userId);
+
+		expect(promise).rejects.toEqual(notFoundError("Usuário não existe!"));
 	});
 });

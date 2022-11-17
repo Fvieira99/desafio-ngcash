@@ -93,6 +93,8 @@ describe("POST /singin integration test suit", () => {
 
 		const response = await agent.post("/signin").send(user);
 
+		console.log(response.body);
+
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toBeNull();
 	});
@@ -113,6 +115,22 @@ describe("POST /singin integration test suit", () => {
 			.send({ ...user, password: "wrong_password" });
 
 		expect(response.statusCode).toBe(401);
+	});
+});
+
+describe("GET /user-info integration test suit", () => {
+	it("Should return user info given valid token!", async () => {
+		const user = await existingUserScenario();
+
+		const { body } = await agent.post("/signin").send(user);
+
+		const response = await agent
+			.get("/user-info")
+			.set("Authorization", `Bearer ${body.token}`);
+
+		expect(response.statusCode).toBe(200);
+		expect(response.body).not.toBeNull();
+		expect(response.body.username).toBe(user.username);
 	});
 });
 

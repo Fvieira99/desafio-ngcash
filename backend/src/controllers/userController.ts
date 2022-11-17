@@ -15,12 +15,20 @@ async function signIn(req: Request, res: Response) {
 
 	const token = await userService.signIn(data);
 
-	res.status(200).send(token);
+	res.status(200).send({ token });
+}
+async function getUserInfo(req: Request, res: Response) {
+	const { userId }: { userId: number } = res.locals.user;
+
+	const account = await userService.getUserInfo(userId);
+
+	res.status(200).send(account);
 }
 
 const userController = {
 	signUp,
 	signIn,
+	getUserInfo,
 };
 
 export default userController;

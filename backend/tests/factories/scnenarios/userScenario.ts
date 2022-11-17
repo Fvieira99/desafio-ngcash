@@ -19,3 +19,34 @@ export async function existingUserScenario() {
 
 	return user;
 }
+
+export async function existingTwoUsersScenario() {
+	const debitedUser = createUserData();
+	const creditedUser = createUserData();
+
+	const createdDebitedUser = await prisma.user.create({
+		data: {
+			username: debitedUser.username,
+			password: encryptPassword(debitedUser.password),
+			account: {
+				create: {
+					balance: 10000,
+				},
+			},
+		},
+	});
+
+	const createdCreditedUser = await prisma.user.create({
+		data: {
+			username: creditedUser.username,
+			password: encryptPassword(creditedUser.password),
+			account: {
+				create: {
+					balance: 10000,
+				},
+			},
+		},
+	});
+
+	return { debitedUser, creditedUser: createdCreditedUser };
+}

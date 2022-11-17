@@ -25,9 +25,19 @@ async function createUserAndAccount(data: inputUserData) {
 	});
 }
 
+async function findUserById(id: number) {
+	return await prisma.user.findUnique({
+		where: { id },
+		include: {
+			account: true,
+		},
+	});
+}
+
 const userRepository = {
 	createUserAndAccount,
 	findUserByUsername,
+	findUserById,
 };
 
 export default userRepository;

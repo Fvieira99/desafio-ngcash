@@ -1,7 +1,11 @@
 import userRepository, {
 	inputUserData,
 } from "../repositories/userRepository.js";
-import { conflictError, unauthorizedError } from "../utils/errors.js";
+import {
+	conflictError,
+	notFoundError,
+	unauthorizedError,
+} from "../utils/errors.js";
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -32,6 +36,20 @@ async function signIn(data: inputUserData) {
 	return token;
 }
 
+async function getUserInfo(userId: number) {
+	const user = await userRepository.findUserById(userId);
+
+	if (!user) {
+		throw notFoundError("Usuário não existe!");
+	}
+
+	return {
+		username: user.username,
+		userId: user.id,
+		account: user.account,
+	};
+}
+
 export function encryptPassword(password: string): string {
 	const SALT = 10;
 
@@ -45,8 +63,8 @@ function decryptPassword(
 	return bcrypt.compareSync(inputUserPassword, dbUserPassword);
 }
 
-function generateToken(id: number): string {
-	const JWT_DATA = { userId: id };
+function generateToken(userId: number): string {
+	const JWT_DATA = { userId };
 	const JWT_KEY = process.env.JWT_SECRET;
 	const JWT_CONFIG = { expiresIn: "1 day" };
 
@@ -56,6 +74,7 @@ function generateToken(id: number): string {
 const userService = {
 	signUp,
 	signIn,
+	getUserInfo,
 };
 
 export default userService;
