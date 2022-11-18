@@ -45,17 +45,8 @@ async function findUserTransactions(
 ) {
 	const user = await userRepository.findUserById(userId);
 
-	if (
-		!validateWhereFilter(whereFilter) ||
-		!validateOrderByFilter(orderByFilter)
-	) {
-		throw badRequestError(
-			"Filtros não disóníveis! Impossível realizar esta busca!"
-		);
-	}
-
 	if (!user) {
-		throw badRequestError("Not Found Error");
+		throw badRequestError("Usuário não existe!");
 	}
 
 	return await transactionRepository.findUserTransactions(
@@ -73,32 +64,9 @@ function validateBalance(debitedAccountBalance: number, valueDebited: number) {
 	return true;
 }
 
-function validateWhereFilter(whereFilter: WhereFilter): boolean {
-	if (
-		whereFilter !== "debitedAccountId" &&
-		whereFilter !== "creditedAccountId" &&
-		whereFilter !== undefined
-	) {
-		return false;
-	}
-
-	return true;
-}
-
-function validateOrderByFilter(orderByFilter: OrderByFilter): boolean {
-	if (
-		orderByFilter !== "asc" &&
-		orderByFilter !== "desc" &&
-		orderByFilter !== undefined
-	) {
-		return false;
-	}
-	return true;
-}
-
-const transactioService = {
+const transactionService = {
 	cashOut,
 	findUserTransactions,
 };
 
-export default transactioService;
+export default transactionService;

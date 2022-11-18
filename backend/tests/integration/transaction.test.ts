@@ -2,11 +2,7 @@ import { prisma } from "../../src/database/db.js";
 import supertest from "supertest";
 
 import app from "../../src/app.js";
-import { createUserData } from "../factories/userFactory.js";
-import {
-	existingTwoUsersScenario,
-	existingUserScenario,
-} from "../factories/scnenarios/userScenario.js";
+import { existingTwoUsersScenario } from "../factories/scnenarios/userScenario.js";
 import { createTransactionData } from "../factories/transactionFactory.js";
 
 const agent = supertest(app);
@@ -23,10 +19,51 @@ describe("POST /cashout", () => {
 		const { body } = await agent.post("/signin").send(debitedUser);
 
 		const response = await agent
-			.post("/cashout")
+			.post("/transactions/cashout")
 			.send(transactionData)
 			.set("Authorization", `Bearer ${body.token}`);
 
 		expect(response.statusCode).toBe(200);
 	});
+});
+
+describe("GET /transactions", () => {
+	it("Should return user transactions given none or correct query params", async () => {
+		const { debitedUser } = await existingTwoUsersScenario();
+
+		const whereFilter = "debitedAccountId";
+		const orderByFilter = "asc";
+
+		const { body } = await agent.post("/signin").send(debitedUser);
+
+		const response = await agent
+			.get("/transactions")
+			.set("Authorization", `Bearer ${body.token}`)
+			.query({ whereFilter, orderByFilter });
+		expect(response.statusCode).toBe(200);
+		expect(response.body.length).toBe(0);
+	});
+
+	it("Should return status code 400 if at least one of the query string params is not valid!", async () => {
+		const { debitedUser } = await existingTwoUsersScenario();
+
+		const whereFilter = "wrongfilter";
+		const orderByFilter = "wrongfilter";
+
+		const { body } = await agent.post("/signin").send(debitedUser);
+
+		const response = await agent
+			.get("/transactions")
+			.set("Authorization", `Bearer ${body.token}`)
+			.query({ whereFilter, orderByFilter });
+		expect(response.statusCode).toBe(400);
+		expect(response.text).toBe(
+			"Filtros inválidos! Impossível realizar essa busca!"
+		);
+	});
+});
+
+afterAll(async () => {
+	await prisma.$executeRaw`TRUNCATE "Transactions" CASCADE;`;
+	prisma.$disconnect();
 });

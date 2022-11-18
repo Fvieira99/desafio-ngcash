@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 
-import transactioService from "../../src/services/transactionService.js";
+import transactionService from "../../src/services/transactionService.js";
 import transactionRepository from "../../src/repositories/transactionRepository.js";
 import userRepository from "../../src/repositories/userRepository.js";
 import { createTransactionData } from "../factories/transactionFactory.js";
@@ -36,7 +36,7 @@ describe("Transaction service unit test suit", () => {
 				};
 			});
 
-		await transactioService.cashOut(transactionData, debitedAccountOwnerId);
+		await transactionService.cashOut(transactionData, debitedAccountOwnerId);
 
 		expect(transactionRepository.createTransaction).toBeCalledTimes(1);
 	});
@@ -59,7 +59,7 @@ describe("Transaction service unit test suit", () => {
 				return null;
 			});
 
-		const promise = transactioService.cashOut(
+		const promise = transactionService.cashOut(
 			transactionData,
 			debitedAccountOwnerId
 		);
@@ -94,7 +94,7 @@ describe("Transaction service unit test suit", () => {
 				};
 			});
 
-		const promise = transactioService.cashOut(
+		const promise = transactionService.cashOut(
 			transactionData,
 			debitedAccountOwnerId
 		);
@@ -129,11 +129,60 @@ describe("Transaction service unit test suit", () => {
 				};
 			});
 
-		const promise = transactioService.cashOut(
+		const promise = transactionService.cashOut(
 			transactionData,
 			debitedAccountOwnerId
 		);
 
 		expect(promise).rejects.toEqual(badRequestError("Saldo Insuficente!"));
+	});
+
+	it("Should return user transactions given none or correct filters", async () => {
+		const whereFilter = "debitedAccountId";
+		const orderByFilter = "desc";
+		const userId = 1;
+
+		jest
+			.spyOn(userRepository, "findUserById")
+			.mockImplementationOnce((): any => {
+				return {
+					userId: 1,
+				};
+			});
+
+		jest
+			.spyOn(transactionRepository, "findUserTransactions")
+			.mockImplementationOnce((): any => {
+				return [
+					{
+						id: 1,
+						creditedAccountId: 2,
+						debitedAccountId: 1,
+						value: 2000,
+					},
+				];
+			});
+
+		const userTransactions = await transactionService.findUserTransactions(
+			userId,
+			whereFilter,
+			orderByFilter
+		);
+
+		expect(userTransactions.length).toBe(1);
+	});
+
+	it("Should return error if user does not exist!", async () => {
+		const whereFilter = "creditedAccountId";
+		const orderByFilter = "desc";
+		const userId = 1;
+
+		const promise = transactionService.findUserTransactions(
+			userId,
+			whereFilter,
+			orderByFilter
+		);
+
+		expect(promise).rejects.toEqual(badRequestError("Usuário não existe!"));
 	});
 });

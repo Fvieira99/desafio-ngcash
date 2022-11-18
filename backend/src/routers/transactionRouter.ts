@@ -14,7 +14,7 @@ transactionRouter.post(
 );
 
 transactionRouter.get(
-	"/transactions/",
+	"/transactions",
 	validateToken,
 	transactionController.findAllUserTransactions
 );

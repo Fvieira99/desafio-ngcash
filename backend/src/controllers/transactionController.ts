@@ -3,7 +3,7 @@ import {
 	OrderByFilter,
 	WhereFilter,
 } from "../repositories/transactionRepository.js";
-import transactioService from "../services/transactionService.js";
+import transactionService from "../services/transactionService.js";
 
 export interface InputTransactionData {
 	creditedAccountOwnerId: number;
@@ -14,7 +14,7 @@ async function cashOut(req: Request, res: Response) {
 	const { userId }: { userId: number } = res.locals.user;
 	const body: InputTransactionData = req.body;
 
-	await transactioService.cashOut(body, userId);
+	await transactionService.cashOut(body, userId);
 
 	res.status(200).send("Transação realizada com sucesso!");
 }
@@ -25,13 +25,45 @@ async function findAllUserTransactions(req: Request, res: Response) {
 	const whereFilter = req.query.whereFilter as WhereFilter;
 	const orderByFilter = req.query.orderByFilter as OrderByFilter;
 
-	const transactions = await transactioService.findUserTransactions(
+	if (
+		!validateWhereFilter(whereFilter) ||
+		!validateOrderByFilter(orderByFilter)
+	) {
+		return res
+			.status(400)
+			.send("Filtros inválidos! Impossível realizar essa busca!");
+	}
+
+	const transactions = await transactionService.findUserTransactions(
 		userId,
 		whereFilter,
 		orderByFilter
 	);
 
 	res.status(200).send(transactions);
+}
+
+function validateWhereFilter(whereFilter: WhereFilter): boolean {
+	if (
+		whereFilter !== "debitedAccountId" &&
+		whereFilter !== "creditedAccountId" &&
+		whereFilter !== undefined
+	) {
+		return false;
+	}
+
+	return true;
+}
+
+function validateOrderByFilter(orderByFilter: OrderByFilter): boolean {
+	if (
+		orderByFilter !== "asc" &&
+		orderByFilter !== "desc" &&
+		orderByFilter !== undefined
+	) {
+		return false;
+	}
+	return true;
 }
 
 const transactionController = {

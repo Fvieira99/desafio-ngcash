@@ -93,8 +93,6 @@ describe("POST /singin integration test suit", () => {
 
 		const response = await agent.post("/signin").send(user);
 
-		console.log(response.body);
-
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toBeNull();
 	});
