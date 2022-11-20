@@ -17,18 +17,18 @@ async function cashOut(data: InputTransactionData, userId: number) {
 
 	if (!creditedAccount || !debitedAccount) {
 		throw badRequestError(
-			"Impossível realizar a transação de ou para uma conta que não existe!"
+			"It is not possible to make the transaction, because one of the accounts does not exist!"
 		);
 	}
 
 	if (creditedAccount.id === debitedAccount.id) {
 		throw badRequestError(
-			"Impossível realizar a transferência para a sua própria conta!"
+			"It is not possible to make a transaction to your own account!"
 		);
 	}
 
 	if (!validateBalance(debitedAccount.balance, data.value)) {
-		throw badRequestError("Saldo Insuficente!");
+		throw badRequestError("Not enough balance!");
 	}
 
 	await transactionRepository.createTransaction({
@@ -46,7 +46,7 @@ async function findUserTransactions(
 	const user = await userRepository.findUserById(userId);
 
 	if (!user) {
-		throw badRequestError("Usuário não existe!");
+		throw badRequestError("User does not exist!");
 	}
 
 	return await transactionRepository.findUserTransactions(

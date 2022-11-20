@@ -6,7 +6,7 @@ interface LoadingProps {
 
 const initialValue = {
 	isLoading: false,
-	toggleLoading: () => {},
+	setIsLoading: (data: boolean) => {},
 };
 
 const LoadingContext = createContext(initialValue);
@@ -14,12 +14,8 @@ const LoadingContext = createContext(initialValue);
 function LoadingProvider({ children }: LoadingProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
-	function toggleLoading() {
-		setIsLoading(!isLoading);
-	}
-
 	return (
-		<LoadingContext.Provider value={{ isLoading, toggleLoading }}>
+		<LoadingContext.Provider value={{ isLoading, setIsLoading }}>
 			{children}
 		</LoadingContext.Provider>
 	);

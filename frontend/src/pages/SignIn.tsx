@@ -1,17 +1,21 @@
-import { Button } from "@mui/material";
-import { useState, useContext } from "react";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import {
+	Button,
+	Avatar,
+	TextField,
+	Box,
+	Grid,
+	Typography,
+	Container,
+} from "@mui/material";
+import { useState, useContext, useEffect } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
 import { LoadingContext } from "../contexts/LoadingContext";
 import apiService from "../services/API";
 import { AuthContext } from "../contexts/AuthContext";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
+import Swal from "sweetalert2";
+import { ThreeDots } from "react-loader-spinner";
 
 const styles = {
 	wrapper: {
@@ -45,27 +49,40 @@ export default function SignIn() {
 
 	const navigate = useNavigate();
 
-	const { isLoading, toggleLoading } = useContext(LoadingContext);
-	const { saveToken } = useContext(AuthContext);
+	const { isLoading, setIsLoading } = useContext(LoadingContext);
+	const { saveToken, token } = useContext(AuthContext);
+
+	useEffect(() => {
+		if (token) {
+			navigate("/main");
+		}
+	}, [token]);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		toggleLoading();
+		setIsLoading(true);
 
 		try {
 			const response: AxiosResponse = await apiService.signIn(signInData);
 
 			saveToken(response.data);
 
-			toggleLoading();
+			setIsLoading(false);
 
 			navigate("/main");
 		} catch (error) {
-			console.log(error);
-			toggleLoading();
+			const err = error as AxiosError;
 
 			setSignInData(initialValue);
+
+			Swal.fire({
+				icon: "error",
+				title: "Something went wrong!",
+				text: err.response?.data,
+			}).then(() => {
+				setIsLoading(false);
+			});
 		}
 	};
 
@@ -104,7 +121,7 @@ export default function SignIn() {
 								required
 								fullWidth
 								name="password"
-								label="Password"
+								label="password"
 								type="password"
 								id="password"
 								autoComplete="password"
@@ -125,7 +142,19 @@ export default function SignIn() {
 						variant="contained"
 						sx={{ mt: 3, mb: 2 }}
 					>
-						Sign In
+						{isLoading ? (
+							<ThreeDots
+								height="20"
+								width="30"
+								radius="15"
+								color="#ffffff"
+								ariaLabel="three-dots-loading"
+								wrapperStyle={{}}
+								visible={true}
+							/>
+						) : (
+							"Sign In"
+						)}
 					</Button>
 					<Grid container justifyContent="flex-end">
 						<Grid item onClick={() => navigate("/")}>

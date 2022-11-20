@@ -10,6 +10,9 @@ import Container from "@mui/material/Container";
 import { useNavigate } from "react-router-dom";
 import { LoadingContext } from "../contexts/LoadingContext";
 import apiService from "../services/API";
+import Swal from "sweetalert2";
+import { AxiosError } from "axios";
+import { ThreeDots } from "react-loader-spinner";
 
 const styles = {
 	wrapper: {
@@ -43,24 +46,50 @@ export default function SignUp() {
 
 	const navigate = useNavigate();
 
-	const { isLoading, toggleLoading } = useContext(LoadingContext);
+	const { isLoading, setIsLoading } = useContext(LoadingContext);
+
+	console.log(signUpData);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		toggleLoading();
 
+		setIsLoading(true);
 		try {
 			await apiService.signUp(signUpData);
 
-			toggleLoading();
+			Swal.fire({
+				icon: "success",
+				title: "Success!",
+				text: "User Created!",
+			}).then(() => {
+				setIsLoading(false);
 
-			navigate("/signin");
+				navigate("/signin");
+			});
 		} catch (error) {
-			console.log(error);
-			alert(error);
+			const err = error as AxiosError;
 
-			toggleLoading();
+			console.log(err);
+
 			setSignUpData(initialValue);
+
+			if (err.response?.status === 422) {
+				Swal.fire({
+					icon: "error",
+					title: "Invalid Data",
+					text: "Please, fill the fields correctly!",
+				}).then(() => {
+					setIsLoading(false);
+				});
+			} else {
+				Swal.fire({
+					icon: "error",
+					title: "Something went wrong!",
+					text: err.response?.data,
+				}).then(() => {
+					setIsLoading(false);
+				});
+			}
 		}
 	};
 
@@ -73,10 +102,12 @@ export default function SignUp() {
 				<Typography component="h1" variant="h5">
 					Sign up
 				</Typography>
-				<Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+				<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
 					<Grid container spacing={2}>
 						<Grid item xs={12}>
 							<TextField
+								type="text"
+								inputProps={{ minLength: 3 }}
 								disabled={isLoading}
 								required
 								fullWidth
@@ -96,19 +127,22 @@ export default function SignUp() {
 						<Grid item xs={12}>
 							<TextField
 								disabled={isLoading}
+								inputProps={{ pattern: "^(?=.*d)(?=.*[A-Z]).{8,}$" }}
 								required
 								fullWidth
 								name="password"
-								label="Password"
+								label="password"
 								type="password"
 								id="password"
 								autoComplete="password"
+								value={signUpData.password}
 								onChange={(e) =>
 									setSignUpData({
 										...signUpData,
 										[e.target.name]: e.target.value,
 									})
 								}
+								helperText="Password must have at least one uppercase letter and one number!"
 							/>
 						</Grid>
 					</Grid>
@@ -119,7 +153,19 @@ export default function SignUp() {
 						variant="contained"
 						sx={{ mt: 3, mb: 2 }}
 					>
-						Sign Up
+						{isLoading ? (
+							<ThreeDots
+								height="20"
+								width="30"
+								radius="15"
+								color="#ffffff"
+								ariaLabel="three-dots-loading"
+								wrapperStyle={{}}
+								visible={true}
+							/>
+						) : (
+							"Sign Up"
+						)}
 					</Button>
 					<Grid container justifyContent="flex-end">
 						<Grid item onClick={() => navigate("/signin")}>

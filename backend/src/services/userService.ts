@@ -40,7 +40,7 @@ async function getUserInfo(userId: number) {
 	const user = await userRepository.findUserById(userId);
 
 	if (!user) {
-		throw notFoundError("Usuário não existe!");
+		throw notFoundError("User does not exist!");
 	}
 
 	return {

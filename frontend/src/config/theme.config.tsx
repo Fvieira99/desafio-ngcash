@@ -8,8 +8,11 @@ interface ThemeProps {
 const themePallete = {
 	BG: "#001e3c",
 	MAIN: "#265D97",
-	BT_DEFAULT: "#265D97",
+	PAPER_DEFAULT: "#091E33",
+	PAPER_TEXT: "#425466",
 	GLOBAL_FONT: '"IBM Plex Sans", sans-serif',
+	BT: "#007fff",
+	BT_HOVER: "#0059b2",
 };
 
 const theme = createTheme({
@@ -21,6 +24,10 @@ const theme = createTheme({
 		primary: {
 			main: themePallete.MAIN,
 		},
+		secondary: {
+			main: themePallete.BT,
+			dark: themePallete.BT_HOVER,
+		},
 	},
 	typography: {
 		fontFamily: themePallete.GLOBAL_FONT,
@@ -31,7 +38,15 @@ const theme = createTheme({
 				style: {
 					textTransform: "none",
 					boxShadow: "none",
-					backgroundColor: themePallete.MAIN,
+				},
+			},
+		},
+		MuiPaper: {
+			defaultProps: {
+				style: {
+					backgroundColor: themePallete.PAPER_DEFAULT,
+					boxShadow: "none",
+					color: themePallete.PAPER_TEXT,
 				},
 			},
 		},
