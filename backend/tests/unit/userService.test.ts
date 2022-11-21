@@ -142,6 +142,6 @@ describe("User Service Test Suit!", () => {
 
 		const promise = userService.getUserInfo(userId);
 
-		expect(promise).rejects.toEqual(notFoundError("Usuário não existe!"));
+		expect(promise).rejects.toEqual(notFoundError("User does not exist!"));
 	});
 });

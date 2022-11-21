@@ -46,6 +46,26 @@ async function findUserTransactions(
 	return await prisma.transaction.findMany({
 		where: buildWhereFilter(userId, whereFilter),
 		orderBy: buildOrderByFilter(orderByFilter),
+		include: {
+			creditedAccount: {
+				include: {
+					User: {
+						select: {
+							username: true,
+						},
+					},
+				},
+			},
+			debitedAccount: {
+				include: {
+					User: {
+						select: {
+							username: true,
+						},
+					},
+				},
+			},
+		},
 	});
 }
 

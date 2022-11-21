@@ -13,6 +13,7 @@ import apiService from "../services/API";
 import Swal from "sweetalert2";
 import { AxiosError } from "axios";
 import { ThreeDots } from "react-loader-spinner";
+import Form from "../components/Form";
 
 const styles = {
 	wrapper: {
@@ -102,50 +103,48 @@ export default function SignUp() {
 				<Typography component="h1" variant="h5">
 					Sign up
 				</Typography>
-				<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-					<Grid container spacing={2}>
-						<Grid item xs={12}>
-							<TextField
-								type="text"
-								inputProps={{ minLength: 3 }}
-								disabled={isLoading}
-								required
-								fullWidth
-								id="username"
-								label="username"
-								name="username"
-								autoComplete="username"
-								value={signUpData.username}
-								onChange={(e) =>
-									setSignUpData({
-										...signUpData,
-										[e.target.name]: e.target.value,
-									})
-								}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								disabled={isLoading}
-								inputProps={{ pattern: "^(?=.*d)(?=.*[A-Z]).{8,}$" }}
-								required
-								fullWidth
-								name="password"
-								label="password"
-								type="password"
-								id="password"
-								autoComplete="password"
-								value={signUpData.password}
-								onChange={(e) =>
-									setSignUpData({
-										...signUpData,
-										[e.target.name]: e.target.value,
-									})
-								}
-								helperText="Password must have at least one uppercase letter and one number!"
-							/>
-						</Grid>
-					</Grid>
+				<Form handleSubmit={handleSubmit}>
+					<TextField
+						sx={{ width: "345px" }}
+						type="text"
+						inputProps={{ minLength: 3 }}
+						disabled={isLoading}
+						required
+						fullWidth
+						id="username"
+						label="username"
+						name="username"
+						autoComplete="username"
+						value={signUpData.username}
+						onChange={(e) =>
+							setSignUpData({
+								...signUpData,
+								[e.target.name]: e.target.value,
+							})
+						}
+					/>
+
+					<TextField
+						sx={{ width: "345px" }}
+						disabled={isLoading}
+						inputProps={{ pattern: "^(?=.*d)(?=.*[A-Z]).{8,}$" }}
+						required
+						fullWidth
+						name="password"
+						label="password"
+						type="password"
+						id="password"
+						autoComplete="password"
+						value={signUpData.password}
+						onChange={(e) =>
+							setSignUpData({
+								...signUpData,
+								[e.target.name]: e.target.value,
+							})
+						}
+						helperText="Password must have at least one uppercase letter and one number!"
+					/>
+
 					<Button
 						disabled={isLoading}
 						type="submit"
@@ -174,7 +173,7 @@ export default function SignUp() {
 							</Typography>
 						</Grid>
 					</Grid>
-				</Box>
+				</Form>
 			</Box>
 		</Container>
 	);

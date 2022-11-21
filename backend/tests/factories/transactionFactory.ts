@@ -1,9 +1,9 @@
 export function createTransactionData(
-	creditedAccountOwnerId = 2,
+	creditedAccountOwnerUsername = "user",
 	value = 5000
 ) {
 	return {
-		creditedAccountOwnerId,
+		creditedAccountOwnerUsername,
 		value,
 	};
 }

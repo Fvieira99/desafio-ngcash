@@ -16,6 +16,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { AxiosError, AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import { ThreeDots } from "react-loader-spinner";
+import Form from "../components/Form";
 
 const styles = {
 	wrapper: {
@@ -95,46 +96,44 @@ export default function SignIn() {
 				<Typography component="h1" variant="h5">
 					Sign In
 				</Typography>
-				<Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-					<Grid container spacing={2}>
-						<Grid item xs={12}>
-							<TextField
-								disabled={isLoading}
-								required
-								fullWidth
-								id="username"
-								label="username"
-								name="username"
-								autoComplete="username"
-								value={signInData.username}
-								onChange={(e) =>
-									setSignInData({
-										...signInData,
-										[e.target.name]: e.target.value,
-									})
-								}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								disabled={isLoading}
-								required
-								fullWidth
-								name="password"
-								label="password"
-								type="password"
-								id="password"
-								autoComplete="password"
-								value={signInData.password}
-								onChange={(e) =>
-									setSignInData({
-										...signInData,
-										[e.target.name]: e.target.value,
-									})
-								}
-							/>
-						</Grid>
-					</Grid>
+				<Form handleSubmit={handleSubmit}>
+					<TextField
+						sx={{ width: "345px" }}
+						disabled={isLoading}
+						required
+						fullWidth
+						id="username"
+						label="username"
+						name="username"
+						autoComplete="username"
+						value={signInData.username}
+						onChange={(e) =>
+							setSignInData({
+								...signInData,
+								[e.target.name]: e.target.value,
+							})
+						}
+					/>
+
+					<TextField
+						sx={{ width: "345px" }}
+						disabled={isLoading}
+						required
+						fullWidth
+						name="password"
+						label="password"
+						type="password"
+						id="password"
+						autoComplete="password"
+						value={signInData.password}
+						onChange={(e) =>
+							setSignInData({
+								...signInData,
+								[e.target.name]: e.target.value,
+							})
+						}
+					/>
+
 					<Button
 						disabled={isLoading}
 						type="submit"
@@ -163,7 +162,7 @@ export default function SignIn() {
 							</Typography>
 						</Grid>
 					</Grid>
-				</Box>
+				</Form>
 			</Box>
 		</Container>
 	);

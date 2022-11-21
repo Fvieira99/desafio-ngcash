@@ -8,6 +8,9 @@ async function findUserByUsername(username: string) {
 		where: {
 			username,
 		},
+		include: {
+			account: true,
+		},
 	});
 }
 

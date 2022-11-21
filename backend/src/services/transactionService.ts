@@ -7,13 +7,13 @@ import userRepository from "../repositories/userRepository.js";
 import { badRequestError } from "../utils/errors.js";
 
 async function cashOut(data: InputTransactionData, userId: number) {
-	const debitedUser = await userRepository.findUserById(userId);
-	const debitedAccount = debitedUser?.account;
+	const debitedAccountOwner = await userRepository.findUserById(userId);
+	const debitedAccount = debitedAccountOwner?.account;
 
-	const creditedUser = await userRepository.findUserById(
-		data.creditedAccountOwnerId
+	const creditedAccountOwner = await userRepository.findUserByUsername(
+		data.creditedAccountOwnerUsername
 	);
-	const creditedAccount = creditedUser?.account;
+	const creditedAccount = creditedAccountOwner?.account;
 
 	if (!creditedAccount || !debitedAccount) {
 		throw badRequestError(
@@ -28,7 +28,7 @@ async function cashOut(data: InputTransactionData, userId: number) {
 	}
 
 	if (!validateBalance(debitedAccount.balance, data.value)) {
-		throw badRequestError("Not enough balance!");
+		throw badRequestError("Insufficient funds!");
 	}
 
 	await transactionRepository.createTransaction({
@@ -49,11 +49,23 @@ async function findUserTransactions(
 		throw badRequestError("User does not exist!");
 	}
 
-	return await transactionRepository.findUserTransactions(
+	const transactions = await transactionRepository.findUserTransactions(
 		userId,
 		whereFilter,
 		orderByFilter
 	);
+
+	return transactions.map((transaction) => {
+		return {
+			id: transaction.id,
+			debitedAccountId: transaction.debitedAccountId,
+			debitedUsername: transaction.debitedAccount.User.username,
+			creditedAccountId: transaction.creditedAccountId,
+			creditedUsername: transaction.creditedAccount.User.username,
+			value: transaction.value,
+			createdAt: transaction.createdAt,
+		};
+	});
 }
 
 function validateBalance(debitedAccountBalance: number, valueDebited: number) {

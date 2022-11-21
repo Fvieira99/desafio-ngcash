@@ -1,6 +1,8 @@
 import axios from "axios";
+import { CashoutData } from "../pages/Cashout";
 import { SignInData } from "../pages/SignIn";
 import { SignUpData } from "../pages/SignUp";
+import { Filters } from "../pages/Transactions";
 
 interface RequestConfig {
 	headers: {
@@ -21,15 +23,15 @@ function buildConfig(token: string | null): RequestConfig {
 	};
 }
 
-async function signUp(data: SignUpData) {
+function signUp(data: SignUpData) {
 	return API.post("/signup", data);
 }
 
-async function signIn(data: SignInData) {
+function signIn(data: SignInData) {
 	return API.post("/signin", data);
 }
 
-async function getUserInfo(token: string | null) {
+function getUserInfo(token: string | null) {
 	const config = buildConfig(token);
 
 	console.log(config);
@@ -37,10 +39,46 @@ async function getUserInfo(token: string | null) {
 	return API.get("/user-info", config);
 }
 
+function cashout(token: string | null, data: CashoutData) {
+	const config = buildConfig(token);
+
+	return API.post("/transactions/cashout", data, config);
+}
+
+function getUserTransactions(token: string | null, data: Filters) {
+	const config = buildConfig(token);
+
+	console.log(data);
+
+	const filters = buildQueryString(data);
+
+	return API.get(`/transactions?${filters.where}&${filters.orderBy}`, config);
+}
+
+function buildQueryString(filters: Filters) {
+	let where = "";
+	let orderBy = "";
+
+	if (filters.where !== "") {
+		where = `whereFilter=${filters.where}`;
+	}
+
+	if (filters.orderBy !== "") {
+		orderBy = `orderByFilter=${filters.orderBy}`;
+	}
+
+	return {
+		where,
+		orderBy,
+	};
+}
+
 const apiService = {
 	signIn,
 	signUp,
 	getUserInfo,
+	cashout,
+	getUserTransactions,
 };
 
 export default apiService;

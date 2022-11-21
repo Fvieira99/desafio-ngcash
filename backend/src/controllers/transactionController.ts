@@ -6,7 +6,7 @@ import {
 import transactionService from "../services/transactionService.js";
 
 export interface InputTransactionData {
-	creditedAccountOwnerId: number;
+	creditedAccountOwnerUsername: string;
 	value: number;
 }
 
@@ -16,7 +16,7 @@ async function cashOut(req: Request, res: Response) {
 
 	await transactionService.cashOut(body, userId);
 
-	res.status(200).send("Transação realizada com sucesso!");
+	res.status(200).send("Successfull transaction!");
 }
 
 async function findAllUserTransactions(req: Request, res: Response) {
@@ -29,9 +29,7 @@ async function findAllUserTransactions(req: Request, res: Response) {
 		!validateWhereFilter(whereFilter) ||
 		!validateOrderByFilter(orderByFilter)
 	) {
-		return res
-			.status(400)
-			.send("Filtros inválidos! Impossível realizar essa busca!");
+		return res.status(400).send("Invalid Filters!");
 	}
 
 	const transactions = await transactionService.findUserTransactions(

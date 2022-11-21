@@ -13,6 +13,10 @@ describe("Transaction service unit test suit", () => {
 		.spyOn(transactionRepository, "createTransaction")
 		.mockImplementation((): any => {});
 
+	jest
+		.spyOn(userRepository, "findUserByUsername")
+		.mockImplementation((): any => {});
+
 	it("Should create transaction given different account ids and if the debitedAccount has enough money to make the transaction", async () => {
 		const transactionData = createTransactionData();
 		const debitedAccountOwnerId = 1;
@@ -26,7 +30,10 @@ describe("Transaction service unit test suit", () => {
 						balance: 10000,
 					},
 				};
-			})
+			});
+
+		jest
+			.spyOn(userRepository, "findUserByUsername")
 			.mockImplementationOnce((): any => {
 				return {
 					account: {
@@ -54,9 +61,6 @@ describe("Transaction service unit test suit", () => {
 						balance: 10000,
 					},
 				};
-			})
-			.mockImplementationOnce((): any => {
-				return null;
 			});
 
 		const promise = transactionService.cashOut(
@@ -66,13 +70,13 @@ describe("Transaction service unit test suit", () => {
 
 		expect(promise).rejects.toEqual(
 			badRequestError(
-				"Impossível realizar a transação de ou para uma conta que não existe!"
+				"It is not possible to make the transaction, because one of the accounts does not exist!"
 			)
 		);
 	});
 
 	it("Should throw error if credited account and debited account are the same account!", async () => {
-		const transactionData = createTransactionData(1, 5000);
+		const transactionData = createTransactionData("user", 5000);
 		const debitedAccountOwnerId = 1;
 
 		jest
@@ -84,7 +88,10 @@ describe("Transaction service unit test suit", () => {
 						balance: 10000,
 					},
 				};
-			})
+			});
+
+		jest
+			.spyOn(userRepository, "findUserByUsername")
 			.mockImplementationOnce((): any => {
 				return {
 					account: {
@@ -101,13 +108,13 @@ describe("Transaction service unit test suit", () => {
 
 		expect(promise).rejects.toEqual(
 			badRequestError(
-				"Impossível realizar a transferência para a sua própria conta!"
+				"It is not possible to make a transaction to your own account!"
 			)
 		);
 	});
 
 	it("Should throw error if credited account and debited account are the same account!", async () => {
-		const transactionData = createTransactionData(2, 11000);
+		const transactionData = createTransactionData("user", 11000);
 		const debitedAccountOwnerId = 1;
 
 		jest
@@ -119,7 +126,9 @@ describe("Transaction service unit test suit", () => {
 						balance: 10000,
 					},
 				};
-			})
+			});
+		jest
+			.spyOn(userRepository, "findUserByUsername")
 			.mockImplementationOnce((): any => {
 				return {
 					account: {
@@ -134,7 +143,7 @@ describe("Transaction service unit test suit", () => {
 			debitedAccountOwnerId
 		);
 
-		expect(promise).rejects.toEqual(badRequestError("Saldo Insuficente!"));
+		expect(promise).rejects.toEqual(badRequestError("Insufficient funds!"));
 	});
 
 	it("Should return user transactions given none or correct filters", async () => {
@@ -159,6 +168,16 @@ describe("Transaction service unit test suit", () => {
 						creditedAccountId: 2,
 						debitedAccountId: 1,
 						value: 2000,
+						debitedAccount: {
+							User: {
+								username: "debitedUser",
+							},
+						},
+						creditedAccount: {
+							User: {
+								username: "creditedUser",
+							},
+						},
 					},
 				];
 			});
@@ -183,6 +202,6 @@ describe("Transaction service unit test suit", () => {
 			orderByFilter
 		);
 
-		expect(promise).rejects.toEqual(badRequestError("Usuário não existe!"));
+		expect(promise).rejects.toEqual(badRequestError("User does not exist!"));
 	});
 });

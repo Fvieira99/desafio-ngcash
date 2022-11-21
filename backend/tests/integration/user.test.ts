@@ -120,11 +120,10 @@ describe("GET /user-info integration test suit", () => {
 	it("Should return user info given valid token!", async () => {
 		const user = await existingUserScenario();
 
-		const { body } = await agent.post("/signin").send(user);
-
+		const { text: token } = await agent.post("/signin").send(user);
 		const response = await agent
 			.get("/user-info")
-			.set("Authorization", `Bearer ${body.token}`);
+			.set("Authorization", `Bearer ${token}`);
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).not.toBeNull();
