@@ -1,0 +1,58 @@
+services:
+  postgres_ng-cash_database:
+    image: postgres
+    container_name: postgres_ng-cash_database
+    restart: always
+    ports:
+      - 1234:5432
+    env_file:
+      - backend/.env
+    volumes:
+      - postgres_ng-cash_database_vm:/var/lib/postgresql/data
+
+  node_ng-cash_app:
+    container_name: node_ng-cash_app
+
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    ports:
+      - 5000:5000
+
+    depends_on:
+      - postgres_ng-cash_database
+
+    env_file:
+      - backend/.env
+
+  react_ng-cash_app:
+    container_name: react_ng-cash_app
+
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    volumes:
+      - react_ng-cash_app_vm:/var/www/html
+
+  nginx_ng-cash:
+    container_name: nginx_ng-cash
+
+    build:
+      context: ./backend/nginx
+      dockerfile: Dockerfile
+
+    ports:
+      - 80:80
+
+    volumes:
+      - react_ng-cash_app_vm:/var/www/html
+
+    depends_on:
+      - postgres_ng-cash_database
+      - node_ng-cash_app
+
+volumes:
+  postgres_ng-cash_database_vm:
+  react_ng-cash_app_vm:

@@ -4,10 +4,8 @@ import { formatBalance } from "../pages/Main";
 
 export interface TransactionData {
 	id: number;
-	debitedAccountId: number;
-	debitedUsername: string;
-	creditedAccountId: number;
-	creditedUsername: string;
+	debitedAccountOwnerUsername: string;
+	creditedAccountOwnerUsername: string;
 	value: number;
 	createdAt: Date;
 }
@@ -37,10 +35,10 @@ export default function TransactionBox({ transaction }: Props) {
 	return (
 		<Paper sx={styles.transaction}>
 			<Typography color="#ffffff">
-				Credited: @{transaction.creditedUsername}
+				Credited: @{transaction.creditedAccountOwnerUsername}
 			</Typography>
 			<Typography color="#ffffff">
-				Debited: @{transaction.debitedUsername}
+				Debited: @{transaction.debitedAccountOwnerUsername}
 			</Typography>
 			<Typography color="#ffffff">
 				Value: R$ {formatBalance(transaction.value)}

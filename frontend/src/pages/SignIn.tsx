@@ -67,7 +67,7 @@ export default function SignIn() {
 		try {
 			const response: AxiosResponse = await apiService.signIn(signInData);
 
-			saveToken(response.data);
+			saveToken(response.data.token);
 
 			setIsLoading(false);
 

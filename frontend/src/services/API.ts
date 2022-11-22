@@ -11,11 +11,10 @@ interface RequestConfig {
 }
 
 const API = axios.create({
-	baseURL: "http://localhost:5000/",
+	baseURL: process.env.REACT_APP_API_URL,
 });
 
 function buildConfig(token: string | null): RequestConfig {
-	console.log();
 	return {
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -34,8 +33,6 @@ function signIn(data: SignInData) {
 function getUserInfo(token: string | null) {
 	const config = buildConfig(token);
 
-	console.log(config);
-
 	return API.get("/user-info", config);
 }
 
@@ -47,8 +44,6 @@ function cashout(token: string | null, data: CashoutData) {
 
 function getUserTransactions(token: string | null, data: Filters) {
 	const config = buildConfig(token);
-
-	console.log(data);
 
 	const filters = buildQueryString(data);
 

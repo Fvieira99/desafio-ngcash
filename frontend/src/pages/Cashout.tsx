@@ -109,7 +109,7 @@ export default function Cashout() {
 								fullWidth
 								id="username"
 								label="username"
-								name="creditedUsername"
+								name="creditedAccountOwnerUsername"
 								autoComplete="username"
 								helperText="Username of the person who is going to receive the credit!"
 								value={cashoutData.creditedAccountOwnerUsername}

@@ -16,12 +16,12 @@ describe("POST /cashout", () => {
 		const { debitedUser, creditedUser } = await existingTwoUsersScenario();
 		const transactionData = createTransactionData(creditedUser.username, 5000);
 
-		const { text: token } = await agent.post("/signin").send(debitedUser);
+		const { body } = await agent.post("/signin").send(debitedUser);
 
 		const response = await agent
 			.post("/transactions/cashout")
 			.send(transactionData)
-			.set("Authorization", `Bearer ${token}`);
+			.set("Authorization", `Bearer ${body.token}`);
 
 		expect(response.statusCode).toBe(200);
 	});
@@ -34,11 +34,11 @@ describe("GET /transactions", () => {
 		const whereFilter = "debitedAccountId";
 		const orderByFilter = "asc";
 
-		const { text: token } = await agent.post("/signin").send(debitedUser);
+		const { body } = await agent.post("/signin").send(debitedUser);
 
 		const response = await agent
 			.get("/transactions")
-			.set("Authorization", `Bearer ${token}`)
+			.set("Authorization", `Bearer ${body.token}`)
 			.query({ whereFilter, orderByFilter });
 		expect(response.statusCode).toBe(200);
 		expect(response.body.length).toBe(0);
@@ -50,11 +50,11 @@ describe("GET /transactions", () => {
 		const whereFilter = "wrongfilter";
 		const orderByFilter = "wrongfilter";
 
-		const { text: token } = await agent.post("/signin").send(debitedUser);
+		const { body } = await agent.post("/signin").send(debitedUser);
 
 		const response = await agent
 			.get("/transactions")
-			.set("Authorization", `Bearer ${token}`)
+			.set("Authorization", `Bearer ${body.token}`)
 			.query({ whereFilter, orderByFilter });
 		expect(response.statusCode).toBe(400);
 		expect(response.text).toBe("Invalid Filters!");

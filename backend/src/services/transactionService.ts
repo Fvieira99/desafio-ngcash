@@ -58,10 +58,8 @@ async function findUserTransactions(
 	return transactions.map((transaction) => {
 		return {
 			id: transaction.id,
-			debitedAccountId: transaction.debitedAccountId,
-			debitedUsername: transaction.debitedAccount.User.username,
-			creditedAccountId: transaction.creditedAccountId,
-			creditedUsername: transaction.creditedAccount.User.username,
+			debitedAccountOwnerUsername: transaction.debitedAccount.User.username,
+			creditedAccountOwnerUsername: transaction.creditedAccount.User.username,
 			value: transaction.value,
 			createdAt: transaction.createdAt,
 		};

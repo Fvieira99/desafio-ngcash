@@ -43,7 +43,9 @@ export default function Transactions() {
 				: transactions.length === 0
 				? "You don't have any transactions"
 				: transactions.map((transaction) => {
-						return <TransactionBox transaction={transaction} />;
+						return (
+							<TransactionBox transaction={transaction} key={transaction.id} />
+						);
 				  })}
 		</MainContainer>
 	);

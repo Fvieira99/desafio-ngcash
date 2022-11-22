@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
@@ -14,6 +14,8 @@ import Swal from "sweetalert2";
 import { AxiosError } from "axios";
 import { ThreeDots } from "react-loader-spinner";
 import Form from "../components/Form";
+import useAuth from "../hooks/useAuth";
+import { AuthContext } from "../contexts/AuthContext";
 
 const styles = {
 	wrapper: {
@@ -49,7 +51,13 @@ export default function SignUp() {
 
 	const { isLoading, setIsLoading } = useContext(LoadingContext);
 
-	console.log(signUpData);
+	const { token } = useContext(AuthContext);
+
+	useEffect(() => {
+		if (token) {
+			navigate("/main");
+		}
+	}, [token]);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
